@@ -1,7 +1,0 @@
-[Info  - 20:58:22] 1 files total
-[Info  - 20:58:22] Indexing project for definitions and static references
-Parsing file:///var/www/html/todo-app/index.php
-[Info  - 20:58:22] Indexing project for dynamic references
-Parsing file:///var/www/html/todo-app/index.php
-[Info  - 20:58:22] 0 Packages
-[Info  - 20:58:22] All 1 PHP files parsed in 0 seconds. 124 MiB allocated.
