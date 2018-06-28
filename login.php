@@ -14,11 +14,23 @@
     </style>
   </head>
   <body>
-  <?php 
-    $username=$email=$password="";
-    $username_err=$email_err=$password_err="";
-    if($_SERVER["REQUEST_METHOD"]=="POST"){
-        class check_assign_input{
+    <?php
+        $servername="localhost";
+        $username="root";
+        $password="";
+        try{
+                $conn= new PDO("mysql:host=$servername;dbname=database_new",$username,$password);
+                $conn->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+        }
+        catch(PDOException $error) {
+                echo "connection failed!".$error->getMessage();
+        }
+    ?> 
+    <?php 
+        $username1=$email=$password1="";
+        $username_err=$email_err=$password_err=$check_err="";
+        if($_SERVER["REQUEST_METHOD"]=="POST"){
+            class check_assign_input{
             function check_empty($id,$id_err){
                 if(empty($_POST["$id"])){
                     $id_err="Input is required";
@@ -30,12 +42,10 @@
                 return "";
             }       
         }
-        $username=$email=$password= new check_assign_input;
-        $username=$username->check_empty("username","username_err");
-        if(!filter_var($username, FILTER_VALIDATE_EMAIL)){
-            $username=$username->check_empty("username","username_err");
-               
-                if(preg_match("/_[a-zA-Z0-9]/",$username)){
+        $username1=$email=$password1= new check_assign_input;
+        $username1=$username1->check_empty("username","username_err");
+        if(!filter_var($username1, FILTER_VALIDATE_EMAIL)){               
+                if(preg_match("/_[a-zA-Z0-9]/",$username1)){
                     $username_err="Please kindly enter name using _,alphabet,number,*$";
                 
                 }
@@ -54,18 +64,34 @@
                     $username_err="username is required";
                 
                 }
-        $password=$password->check_empty("password","password_err");
+        $password1=$password1->check_empty("password","password_err");
             if(empty($_POST["password"])){
                 $password_err="password is required";
                 
             }
-            if(preg_match("/_[a-zA-Z0-9]/",$password)){
+            if(preg_match("/_[a-zA-Z0-9]/",$password1)){
                 $password_err="Please kindly enter password using _,alphabet,number,*$";
             
             }
-            if($password=='' && $password<8){
+            if($password1=='' && $password1<8){
                 $password_err="Password should have 8 or more alphabet";
                 
+            }
+            $user = 'SELECT username,email,password FROM user_info';
+            $info = $conn->query($user);
+            $info->setFetchMode(PDO::FETCH_ASSOC);
+            while($row=$info->fetch()){
+                if($username1==$row['username']&&$password1==$row['password']){
+                    header('location:profile.php');
+                }
+                else{
+                    if($username1!=$row['username']){
+                        $check_err="User does not exist";
+                    }
+                    if($password1!=$row['password']&&$username1==$row['username']){
+                        $password_err="Incorrect password";
+                    }
+                }
             }
     }
 ?>
@@ -90,18 +116,9 @@
             <div class="column is-half">
             <div class="card">
             <div class="card-content">  
-            <!--<div class="field">
-            <label class="label">Name</label>
-              <span class="error">*<?php echo $name_err?></span>
-                    
-                <div class="control">
-                    <input class="input" type="text" name="name" placeholder="Prefered display name">
-
-                </div>
-            </div> -->
-
             <div class="field">
                 <label class="label">Username</label>
+                <span class="error"><?php echo $check_err?></span>
                 <span class="error">*<?php echo $username_err?></span>
                 <div class="control has-icons-left has-icons-right">
                 <input class="input" type="text" name="username" placeholder="Prefered username">
@@ -110,18 +127,6 @@
                 </span>
                 </div>
             </div>
-
-            <!--<div class="field">
-                <label class="label">Email</label>
-                <span class="error">*<?php echo $email_err?></span>
-                <div class="control has-icons-left has-icons-right">
-                <input class="input" type="email" name="email" placeholder="Email you want to register with">
-                <span class="icon is-small is-left">
-                <i class="fas fa-envelope"></i>
-                </span>
-                </div>
-            </div>-->
-
             <div class="field">
                 <label class="label">Password</label>
                 <span class="error">*<?php echo $password_err?></span>
@@ -132,27 +137,10 @@
                 </span>
                 </div>
             </div>
-
-            <!--<div class="field">
-                <label class="label">Re-enter Password</label>
-                <span class="error">*<?php echo $re_password_err?></span>
-                <div class="control has-icons-left has-icons-right">
-                <input class="input" type="password" name="repassword" placeholder="Re-enter your password for confirmation">
-                <span class="icon is-small is-left">
-                <i class="fas fa-lock"></i>
-                </span>
-                </div>
-            </div>-->    
-
-    
-
            <div id="buttons" class="columns">
                <div class="column">
                <button type="submit" id="login" class="button is-large is-primary is-rounded">Log In</button>
                 </div>
-                <!-- <div class="column">
-                <button id="forgot" class="button is-small is-danger is-rounded is-outlined">Forgot password</button>
-                </div> -->
                 <div class="column">
                 <button id="reg"  class="button is-large is-primary is-rounded"><a href="index2.php" style="color: white;text-decoration: none;">Don't have account?</a></button>
                 </div>
@@ -166,8 +154,6 @@
     </form>
     <?php 
         $username_err=$email_err=$password_err="";
-        echo $username." username<br>";
-        echo $password;
     ?>
   </div>
   </body>

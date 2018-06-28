@@ -14,8 +14,22 @@
     </style>
   </head>
   <body>
+    <?php
+        $servername="localhost";
+        $username="root";
+        $password="";
+        try{
+                $conn= new PDO("mysql:host=$servername;dbname=database_new",$username,$password);
+                $conn->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+            
+
+        }
+        catch(PDOException $error) {
+                echo "connection failed!".$error->getMessage();
+        }
+    ?>
   <?php 
-    $name=$username=$email=$password=$re_password="";
+    $name=$username1=$email=$password1=$re_password="";
     $name_err=$username_err=$email_err=$password_err=$re_password_err="";
     if($_SERVER["REQUEST_METHOD"]=="POST"){
         class check_assign_input{
@@ -30,7 +44,7 @@
                 return "";
             }       
         }
-        $name=$username=$email=$password=$re_password= new check_assign_input;
+        $name=$username1=$email=$password1=$re_password= new check_assign_input;
         $name=$name->check_empty("name","name_err");
             if(empty($_POST["name"])){
                 $name_err="Name is required";
@@ -40,12 +54,12 @@
                 $name_err="only alphabet and space is allowed";
                 
             }
-        $username=$username->check_empty("username","username_err");
+        $username1=$username1->check_empty("username","username_err");
             if(empty($_POST["username"])){
                 $username_err="username is required";
                 
             }
-            if(preg_match("/_[a-zA-Z0-9]/",$username)){
+            if(preg_match("/_[a-zA-Z0-9]/",$username1)){
                 $username_err="Please kindly enter username using _,alphabet,number,*$";
                 
             }
@@ -59,16 +73,16 @@
                 $email_err="Invalid Email";
                 
             }
-        $password=$password->check_empty("password","password_err");
+        $password1=$password1->check_empty("password","password_err");
             if(empty($_POST["password"])){
                 $password_err="password is required";
                 
             }
-            if(preg_match("/_[a-zA-Z0-9]/",$password)){
+            if(preg_match("/_[a-zA-Z0-9]/",$password1)){
                 $password_err="Please kindly enter password using _,alphabet,number,*$";
             
             }
-            if($password=='' && $password<8){
+            if($password1=='' && $password1<8){
                 $password_err="Password should have 8 or more alphabet";
                 
             }
@@ -84,8 +98,11 @@
             if($re_password!=$password){
                 $re_password_err="Password did not match.Please Re-enter";
             } 
+        $data="INSERT INTO user_info(`name`,`username`,`email`,`password`) VALUES('$name','$username1','$email','$password1')";
+        $conn->exec($data);
 
     }
+
 ?>
   <div class="container">
     <section class="section">
